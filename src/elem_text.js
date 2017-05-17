@@ -12,6 +12,12 @@ function ElemText(measureCtx, text)
 }
 
 
+ElemText.prototype.getElemsAt = function(elems, x, y)
+{
+	elems.push(this);
+}
+
+
 ElemText.prototype.refreshBegin = function()
 {
 	this.computedX = null;

@@ -49,6 +49,33 @@ ElemTable.prototype.append = function(x, y, elem)
 }
 
 
+ElemTable.prototype.getElemsAt = function(elems, x, y)
+{
+	elems.push(this);
+	
+	let yAccum = 0;
+	for (let j = 0; j < this.yNum; j++)
+	{
+		let xAccum = 0;
+		for (let i = 0; i < this.xNum; i++)
+		{
+			if (this.cells[j][i] == null)
+				continue;
+			
+			if (x >= xAccum && x < xAccum + this.computedWs[i] &&
+				y >= yAccum && y < yAccum + this.computedHs[j])
+			{
+				this.cells[j][i].getElemsAt(elems, x - xAccum, y - yAccum);
+			}
+			
+			xAccum += this.computedWs[i];
+		}
+		
+		yAccum += this.computedHs[j];
+	}
+}
+
+
 ElemTable.prototype.refreshBegin = function()
 {
 	this.computedX = null;
@@ -186,7 +213,7 @@ ElemTable.prototype.computeArraySizes = function(array, unboundedArray, fullsize
 
 ElemTable.prototype.redraw = function(ctx)
 {
-	ctx.strokeStyle = "#ddd";
+	ctx.strokeStyle = "#bbb";
 			
 	let yAccum = 0;
 	for (let j = 0; j < this.yNum; j++)

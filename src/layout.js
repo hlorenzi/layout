@@ -23,6 +23,31 @@ Layout.prototype.setElem = function(elem)
 }
 
 
+Layout.prototype.getElemsAt = function(x, y)
+{
+	let elems = [];
+	
+	if (this.elem != null)
+		this.elem.getElemsAt(elems, x - this.x, y - this.y);
+	
+	return elems;
+}
+
+
+Layout.prototype.eventScrollV = function(x, y, delta)
+{
+	let elems = this.getElemsAt(x, y);
+	for (let i = elems.length - 1; i >= 0; i--)
+	{
+		if (elems[i].eventScrollV)
+		{
+			if (elems[i].eventScrollV(delta))
+				break;
+		}
+	}
+}
+
+
 Layout.prototype.refresh = function()
 {
 	if (this.elem != null)

@@ -61,10 +61,12 @@ function getHierarchy(lines, curLine)
 	for (let i = 1; i < fragments.length; i++)
 	{
 		let paramFragments = fragments[i].trim().split(":");
-		if (paramFragments.length != 2)
-			continue;
 		
-		params[paramFragments[0].trim()] = paramFragments[1].trim();
+		if (paramFragments.length == 1)
+			params[paramFragments[0].trim()] = true;
+		
+		else if (paramFragments.length == 2)
+			params[paramFragments[0].trim()] = paramFragments[1].trim();
 	}
 	
 	return {
@@ -80,6 +82,7 @@ function parseElement(elem)
 	{
 		case "table": return parseTable(elem);
 		case "panel": return parsePanel(elem);
+		case "scroll": return parseScroll(elem);
 		case "p": return parseText(elem);
 		default: throw "unknown tag `" + elem.tag + "`";
 	}
@@ -144,7 +147,29 @@ function parsePanel(elem)
 }
 
 
+function parseScroll(elem)
+{
+	let inner = null;
+	if (elem.children.length > 0)
+		inner = parseElement(elem.children[0]);
+	
+	return new ElemScroll(elem.params.h, elem.params.v, inner);
+}
+
+
 function parseText(elem)
 {
-	return new ElemText(document.getElementById("canvasMain").getContext("2d"), elem.params.text);
+	let text = elem.params.text;
+	if (text.charAt(0) == '#')
+	{
+		let words = ["Lorem", "ipsum", "dolor", "sit", "amet", "content"];
+		let repeat = parseInt(text.substring(1));
+		text = "";
+		for (let i = 0; i < repeat; i++)
+		{
+			text += words[Math.floor(Math.random() * words.length)] + " ";
+		}
+	}
+	
+	return new ElemText(document.getElementById("canvasMain").getContext("2d"), text);
 }

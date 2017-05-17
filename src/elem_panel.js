@@ -9,6 +9,12 @@ function ElemPanel(color)
 }
 
 
+ElemPanel.prototype.getElemsAt = function(elems, x, y)
+{
+	elems.push(this);
+}
+
+
 ElemPanel.prototype.refreshBegin = function()
 {
 	this.computedX = null;

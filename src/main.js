@@ -6,7 +6,7 @@ function main()
 {
 	let textarea = document.getElementById("textareaMain");
 	textarea.value =
-		"table ws:1r hs:u|u|1r\n" +
+		"table ws:1r hs:u|1r|u\n" +
 		"    table x:0 y:0 ws:u|1r|u|u|u hs:u\n" +
 		"        p x:0 y:0 text:Company-Name\n" +
 		"        p x:2 y:0 text:NavButtons--\n" +
@@ -15,13 +15,19 @@ function main()
 
 		"    p x:0 y:2 text:Footer\n\n" +
 
-		"    table x:0 y:1 ws:1r|0.5x|1r hs:u\n" +
+		"    table x:0 y:1 ws:1r|300|1r hs:u\n" +
 		"        table x:0 y:0 ws:1r hs:u|u|u\n" +
 		"            p x:0 y:0 text:SideNav\n" +
 		"            p x:0 y:1 text:Home\n" +
 		"            p x:0 y:2 text:About\n\n" +
 
-		"        p x:1 y:0 text:Content-Content-Content-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem-Sit-Dolor-Amet-Sit-Lorem-Dolor-Amet-Ipsum-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem-Sit-Dolor-Amet-Sit-Lorem-Dolor-Amet-Ipsum-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem-Sit-Dolor-Amet-Sit-Lorem-Dolor-Amet-Ipsum-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem-Sit-Dolor-Amet-Sit-Lorem-Dolor-Amet-Ipsum-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem-Sit-Dolor-Amet-Sit-Lorem-Dolor-Amet-Ipsum-Lorem-Ipsum-Dolor-Sit-Amet-Ipsum-Lorem";
+        "        scroll x:1 y:0 v\n" +
+        "          table ws:1x hs:u|100|u\n" +
+        "            p x:0 y:0 text:#200\n" +
+        "            p x:0 y:2 text:#200\n\n" +
+		
+        "            scroll x:0 y:1 v\n" +
+        "              p text:#100";
 	
 	g_Layout = new Layout();
 	g_Layout.setBounds(40, 60, 560, 360);
@@ -30,8 +36,9 @@ function main()
 	canvas.onmousedown = handleCanvasMouseDown;
 	canvas.onmouseup = handleCanvasMouseUp;
 	canvas.onmousemove = handleCanvasMouseMove;
+	setupEventMouseWheel(canvas);
 	
-	allowTabInTextarea(textarea);
+	setupEventAllowTabKey(textarea);
 	textarea.onkeyup = refreshLayoutFromCode;
 	
 	refreshLayoutFromCode();
@@ -55,7 +62,7 @@ function refreshLayoutFromCode()
 }
 
 
-function allowTabInTextarea(textarea)
+function setupEventAllowTabKey(textarea)
 {
 	textarea.onkeydown = function(ev)
 	{
@@ -67,6 +74,15 @@ function allowTabInTextarea(textarea)
 			this.selectionEnd = s + 2; 
 		}
 	}
+}
+
+
+function setupEventMouseWheel(elem)
+{
+	// IE9, Chrome, Safari, Opera
+	elem.addEventListener("mousewheel", handleCanvasMouseWheel, false);
+	// Firefox
+	elem.addEventListener("DOMMouseScroll", handleCanvasMouseWheel, false);
 }
 
 
@@ -103,6 +119,20 @@ function handleCanvasMouseMove(ev)
 		480 / 2 - h / 2,
 		w, h);
 	g_Layout.refresh();
+	g_Layout.redraw(this);
+}
+
+
+function handleCanvasMouseWheel(ev)
+{
+	ev.preventDefault();
+	let delta = -Math.max(-1, Math.min(1, (ev.wheelDelta || -ev.detail)));
+	
+	let rect = this.getBoundingClientRect();
+	let mouseX = ev.clientX - rect.left;
+	let mouseY = ev.clientY - rect.top;
+	
+	g_Layout.eventScrollV(mouseX, mouseY, delta);
 	g_Layout.redraw(this);
 }
 
